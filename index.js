@@ -1,5 +1,7 @@
-const EFTClient = require("./eftClient")
-const client = new EFTClient(process.env.OWNER_ID);
+/// <reference path="typings/eft.d.ts">/>
+
+const EFTBot = require("./eftClient")
+const client = new EFTBot(process.env.OWNER_ID);
 
 global.clientInstance = client // global variable mostly for debugging
 

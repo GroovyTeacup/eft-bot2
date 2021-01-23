@@ -1,16 +1,17 @@
 const { AkairoClient, CommandHandler, ListenerHandler } = require('discord-akairo');
 const { Intents } = require('discord.js');
 const { Message } = require('discord.js');
+const config = require("./config.json")
 
 const VERSION = "2.0.0"
 
 /**
  *
  *
- * @class EFTClient
+ * @class EFTBot
  * @extends {AkairoClient}
  */
-class EFTClient extends AkairoClient {
+class EFTBot extends AkairoClient {
     constructor(ownerID) {
         super({
             ownerID: ownerID || -1,
@@ -34,7 +35,7 @@ class EFTClient extends AkairoClient {
         // Create Command Handler instance.
         this.commandHandler = new CommandHandler(this, {
             directory: "./commands/", // Directory the commands are loaded from
-            prefix: ".", // The command prefix
+            prefix: config.CommandPrefix, // The command prefix
             blockClient: true,
             blockBots: true,
             allowMention: false,
@@ -50,33 +51,21 @@ class EFTClient extends AkairoClient {
             listenerHandler: this.listenerHandler,
         });
 
-        this.verificationHandler = new VerificationHandler(this)
-
-        this.serverStatsHandler = new ServerStatsHandler(this)
-        this.brSyncHandler = new BRSyncHandler(this)
-
         console.log("Loading command files")
         this.commandHandler.loadAll() // Load all commands
 
         console.log("Loading listener files")
         this.listenerHandler.loadAll()
 
-        console.log("Opening verification handler database")
+        console.log("Opening bot database")
         this.verificationHandler.loadData()
     }
 
+    // Since this bot is only really meant to be run for a single guild we can do this
     getGuild()
     {
-        return this.util.resolveGuild("691845659321565244", this.guilds.cache)
+        return this.util.resolveGuild(config.ServerID, this.guilds.cache)
     }
 }
 
-// pseudo code for vscode completions in command files
-/*class EnlightenedMessage extends Message {
-    constructor()
-    {
-        this.client = new EnlightenedClient()
-    }
- }*/
-
-module.exports = EnlightenedClient
+module.exports = EFTBot
