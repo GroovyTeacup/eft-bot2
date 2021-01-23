@@ -94,7 +94,7 @@ class BanCommand extends Command {
      * @param {EFTMessage} message
      * @param {object} args
      * @param {GuildMember|string} args.target
-     * @param {number} args.duration
+     * @param {number} args.pruneDuration
      * @param {sting} args.reason
      * @param {boolean} args.isID
      * @returns
@@ -122,7 +122,7 @@ class BanCommand extends Command {
             id = args.target.id
         }
 
-        if (args.duration > 7)
+        if (args.pruneDuration > 7)
         {
             return await embedHelper.makeError(this.client, "Specify a ban duration less or equal to 7 days. 0 days for a permanent ban.", "ban failed")
         }
@@ -138,8 +138,8 @@ class BanCommand extends Command {
 
         await message.guild.members.ban(id)
         await message.reply(embedHelper.makeSuccess(this.client, `Banned discord member ${user.username}#${user.discriminator} with ID ${id}` , "Banned member " + user.username))
-        this.handler.emit("memberBanned", user, message.member, args.duration, args.reason)
-        console.log(`${message.author.id} issued a ban to discord member ${id}. Duration: ${args.duration}`)
+        this.handler.emit("memberBanned", user, message.member, args.pruneDuration, args.reason)
+        console.log(`${message.author.id} issued a ban to discord member ${id}. Duration: ${args.pruneDuration}`)
     }
 }
 
