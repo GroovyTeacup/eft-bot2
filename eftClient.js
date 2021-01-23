@@ -2,16 +2,17 @@ const { AkairoClient, CommandHandler, ListenerHandler } = require('discord-akair
 const { Intents } = require('discord.js');
 const { Message } = require('discord.js');
 const config = require("./config.json")
+const DatabaseHandler = require("./databaseHandler")
 
 const VERSION = "2.0.0"
 
 /**
  *
  *
- * @class EFTBot
+ * @class EFTClient
  * @extends {AkairoClient}
  */
-class EFTBot extends AkairoClient {
+class EFTClient extends AkairoClient {
     constructor(ownerID) {
         super({
             ownerID: ownerID || -1,
@@ -24,11 +25,11 @@ class EFTBot extends AkairoClient {
             ws: {
                 intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "GUILD_MEMBERS", "GUILD_BANS"]
             },
-            restRequestTimeout: 15000
+            restRequestTimeout: 15000,
             // Options for discord.js go here.
         });
 
-        console.log(`Initializing EFTBot ${VERSION}`)
+        console.log(`Initializing EFTClient ${VERSION}`)
         
         this.botVersion = VERSION
 
@@ -51,6 +52,8 @@ class EFTBot extends AkairoClient {
             listenerHandler: this.listenerHandler,
         });
 
+        this.databaseHandler = new DatabaseHandler(this)
+
         console.log("Loading command files")
         this.commandHandler.loadAll() // Load all commands
 
@@ -58,7 +61,7 @@ class EFTBot extends AkairoClient {
         this.listenerHandler.loadAll()
 
         console.log("Opening bot database")
-        this.verificationHandler.loadData()
+        this.databaseHandler.loadData()
     }
 
     // Since this bot is only really meant to be run for a single guild we can do this
@@ -68,4 +71,4 @@ class EFTBot extends AkairoClient {
     }
 }
 
-module.exports = EFTBot
+module.exports = EFTClient

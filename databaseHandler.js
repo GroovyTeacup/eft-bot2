@@ -1,8 +1,7 @@
-const api = require("./apiHandler")
 const { Sequelize, DataTypes } = require("sequelize")
-const { User } = require("discord.js")
-const EFTBot = require("./eftClient")
+const EFTClient = require("./eftClient")
 const config = require("./config.json")
+const fs = require("fs")
 
 /**
  *
@@ -12,7 +11,7 @@ const config = require("./config.json")
 class DatabaseHandler {
     /**
      *Creates an instance of DatabaseHandler.
-     * @param {EFTBot} client
+     * @param {EFTClient} client
      * @memberof DatabaseHandler
      */
     constructor(client)
@@ -22,6 +21,8 @@ class DatabaseHandler {
 
         const db = new Sequelize(config.DatabaseName, config.DatabaseUsername, config.DatabasePassword, {
             dialect: "mysql",
+            host: config.DatabaseHost,
+            port: config.DatabasePort,
             retry: {
                 max: 5
             },
@@ -32,7 +33,7 @@ class DatabaseHandler {
 
         console.log("Creating Sequelize DB models")
         
-        const Ban = db.define("Ban", {
+        const Ban = db.define("ban", {
             ban_id: { 
                 type: DataTypes.INTEGER,
                 allowNull: false,
@@ -48,48 +49,81 @@ class DatabaseHandler {
             },
             ban_date: { // The date and time of the ban
                 type: DataTypes.DATE,
-                allowNull: true,
+                allowNull: false,
             },
             ban_issuer: { // The ID of the staff member that issued the ban.
                 type: DataTypes.BIGINT,
-                allowNull: true,
+                allowNull: false,
             },
             is_scammer: { // Whether the user was banned for scamming.
                 type: DataTypes.BOOLEAN,
-                allowNull: true,
+                allowNull: false,
             }
         })
         
-        const Member = db.define("Member", {
+        const Member = db.define("member", {
+            member_id: {
+                type: DataTypes.BIGINT,
+                allowNull: false,
+                primaryKey: true,
+                comment: "Discord Member ID"
+            },
+            member_name: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                comment: "Discord Username/Tag"
+            },
+            account_creation_date: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                comment: "The date/time the member's discord account was created"
+            },
+            accept_date: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: Sequelize.NOW,
+                comment: "The date/time the member used the accept command"
+            },
+            reputation: {
+                type: DataTypes.INTEGER,
+                defaultValue: 0,
+                allowNull: false,
+                comment: "The member's reputation"
+            },
+            mm_reputation: {
+                type: DataTypes.INTEGER,
+                defaultValue: 0,
+                allowNull: false,
+                comment: "The member's middleman reputation"
+            },
+            is_banned: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+                allowNull: false,
+                comment: "Whether the user is banned"
+            },
+            is_active: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+                allowNull: false,
+                comment: "Whether the user is 'active'"
+            }
+        })
+
+        const Warn = db.define("warn", {
             member_id: {
                 type: DataTypes.BIGINT,
                 allowNull: false,
                 primaryKey: true
             },
-            member_name: {
-                type: DataTypes.STRING,
+            issuer_id: {
+                type: DataTypes.BIGINT,
                 allowNull: false,
             },
-            account_creation_date: {
-                type: DataTypes.DATE,
+            warn_reason: {
+                type: DataTypes.STRING,
                 allowNull: false
             },
-            accept_date: {
-                type: DataTypes.DATE,
-                allowNull: false
-            },
-            reputation: {
-                type: DataTypes.INTEGER,
-            },
-            mm_reputation: {
-                type: DataTypes.INTEGER,
-            },
-            is_banned: {
-                type: DataTypes.BOOLEAN,
-            },
-            is_active: {
-                type: DataTypes.BOOLEAN,
-            }
         })
 
         this.bans = Ban
@@ -109,11 +143,25 @@ class DatabaseHandler {
             console.log('Connection has been established to mysql database successfully.');
         } catch (error) {
             console.error('Unable to connect to the database:', error);
+            return process.exit(1)
         }
 
         console.log("Syncing models with database")
 
-        await this.db.sync()
+        if (fs.existsSync("fdbalter"))
+        {
+            console.log("fdbalter file found; Syncing database models with ALTER")
+            this.db.sync({
+                alter: true,
+                logging: console.debug
+            })
+            fs.rmSync("fdbalter")
+        }
+        else
+        {
+            this.db.sync()
+        }
+
         console.log(`There are ${await this.members.count()} members and ${await this.bans.count()} banned members in the database.`)
     }
 
@@ -188,6 +236,24 @@ class DatabaseHandler {
     }
 
     /**
+     * Get the reputation of a member
+     *
+     * @param {string} id
+     * @memberof DatabaseHandler
+     */
+    async getReputation(id)
+    {
+        let member = await this.members.findOne({
+            attributes: ["reputation"],
+            where: {
+                member_id: id
+            }
+        }).catch((reason) => console.error(`Getting reputation of member ${id} failed:`, reason))
+
+        return member.reputation
+    }
+
+    /**
      * Set the reputation of a member
      *
      * @param {string} id
@@ -203,6 +269,24 @@ class DatabaseHandler {
                 member_id: id
             }
         }).catch((reason) => console.error(`Setting reputation of member ${id} failed:`, reason))
+    }
+
+    /**
+     * Get the middleman reputation of a member
+     *
+     * @param {string} id
+     * @memberof DatabaseHandler
+     */
+    async getMMReputation(id)
+    {
+        let member = await this.members.findOne({
+            attributes: ["mm_reputation"],
+            where: {
+                member_id: id
+            }
+        }).catch((reason) => console.error(`Getting reputation of member ${id} failed:`, reason))
+
+        return member.mm_reputation
     }
 
     /**
