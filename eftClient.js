@@ -22,10 +22,10 @@ class EFTBot extends AkairoClient {
             messageSweepInterval: 3600, // every hour
             partials: ["REACTION", "MESSAGE"],
             ws: {
-                intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS"]
+                intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "GUILD_MEMBERS", "GUILD_BANS"]
             },
             restRequestTimeout: 15000
-            // Options for discord.js goes here.
+            // Options for discord.js go here.
         });
 
         console.log(`Initializing EFTBot ${VERSION}`)
