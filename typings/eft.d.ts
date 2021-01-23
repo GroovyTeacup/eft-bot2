@@ -1,3 +1,6 @@
+import { Message } from "discord.js";
+import EFTClient from "../eftClient";
+
 /** An instance of a ban within the database */
 declare class Ban {
     /** The ID of ban instance */
@@ -33,3 +36,7 @@ declare class DBMember {
     /** Whether the member is active */
     is_active: boolean
 }
+/*
+declare class EFTMessage extends Message {
+    client: EFTClient
+}*/
