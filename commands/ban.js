@@ -124,7 +124,7 @@ class BanCommand extends Command {
 
         if (args.pruneDuration > 7)
         {
-            return await embedHelper.makeError(this.client, "Specify a ban duration less or equal to 7 days. 0 days for a permanent ban.", "ban failed")
+            return await embedHelper.makeError(this.client, "Specify a pruning duration less or equal to 7 days. 0 days for no message pruning.", "Ban failed")
         }
 
         let user = await message.client.users.fetch(id, false, true).catch((reason) => {
@@ -136,10 +136,22 @@ class BanCommand extends Command {
             return await message.reply(embedHelper.makeError(this.client, "Failed to find any discord user with the ID " + id, "No user found"))
         }
 
-        await message.guild.members.ban(id)
-        await message.reply(embedHelper.makeSuccess(this.client, `Banned discord member ${user.username}#${user.discriminator} with ID ${id}` , "Banned member " + user.username))
+        // Cut off ban reason if too long
+        // This accounts for the max discord username length as well as the other misc text we put in the ban reason
+        // Max ban reason length is 512 chars
+        if (args.reason.length > 466)
+        {
+            args.reason = args.reason.substr(0, 466) + "..."
+        }
+
+        await message.guild.members.ban(id, {
+            days: args.pruneDuration,
+            reason: `Issuer: ${message.author.username} (${args.reason})`
+        })
+
+        await message.reply(embedHelper.makeSuccess(this.client, `Banned discord member \`${user.username}#${user.discriminator}\` with ID \`${id}\`\nReason: \`${args.reason}\`` , "Banned member " + user.username))
+        console.log(`${message.author.id} issued a ban to discord member ${id}. Prune Duration: ${args.pruneDuration}`)
         this.handler.emit("memberBanned", user, message.member, args.pruneDuration, args.reason)
-        console.log(`${message.author.id} issued a ban to discord member ${id}. Duration: ${args.pruneDuration}`)
     }
 }
 
