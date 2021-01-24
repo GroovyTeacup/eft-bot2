@@ -18,6 +18,8 @@ class AddReputationCommand extends Command {
            channel: "guild",
            typing: true
         });
+
+        this.repAddCache = {}
     }
     
     /**
@@ -34,6 +36,8 @@ class AddReputationCommand extends Command {
         {
             return await message.reply("Usage: `!addrep <Member>`")
         }
+
+        let author = message.author
         
         // Stop the big brain attempts of people giving themselves reputation
         /*if (message.member.id === target.id)
@@ -53,13 +57,46 @@ class AddReputationCommand extends Command {
             return await message.reply(embedHelper.makeError(this.client, "Bots are not people."))
         }
 
+        let reps = this.repAddCache[author.id]
+
+        if (reps != null && reps[target.id] != null)
+        {
+            let time = reps[target.id]
+            let delayMinutes = this.client.configServer.ReputationDelay || 15
+
+            if ((Date.now - time) < (60 * delayMinutes))
+            {
+                return await message.reply(embedHelper.makeError(this.client, `You cannot give reputaton to ${target} again so soon.`))
+            }
+        }
+        else
+        {
+            this.repAddCache[author.id] = reps || {}
+        }
+
         let dbHandler = message.client.databaseHandler
         let reputation = await dbHandler.getReputation(target.id)
         if (reputation == null)
         {
-            // TODO
-            return
+            if (target.roles.cache.has(this.client.configServer.MemberRole))
+            {
+                console.warn(`User ${target.id} is receiving reputation, has the member role, but isn't a registered member in the database. Trying to register them now...`)
+
+                reputation = 0
+                await dbHandler.addMember(target)
+            }
+            else
+            {
+                return await message.reply(embedHelper.makeError(this.client, `${target} is not a registered member. You cannot give them reputation.`))
+            }
         }
+
+        if (reputation >= 2147483647)
+        {
+            return await message.reply(embedHelper.makeError(this.client, `Reputation number too high.`))
+        }
+
+        this.repAddCache[author.id][target.id] = Date.now
 
         await dbHandler.setReputation(target.id, reputation + 1)
         await message.reply(embedHelper.makeSuccess(this.client, `${target} now has ${reputation + 1} reputation.`, "Added Reputation"))
