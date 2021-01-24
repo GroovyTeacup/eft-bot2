@@ -18,7 +18,7 @@ function makeError(client, message, title) {
     .setDescription(message)
     .setColor(0xff0000)
     .setFooter("EFT TC", avatarURL)
-    .setTimestamp(Date.now)
+    .setTimestamp(Date.now())
 }
 
 /**
@@ -33,11 +33,11 @@ function makeSuccess(client, message, title) {
     const avatarURL = client.user.avatarURL()
 
     return new MessageEmbed()
-    .setTitle(title ? title : "Sucess!")
+    .setTitle(title ? title : "Success!")
     .setDescription(message)
-    .setColor(0xff0000)
+    .setColor(0x00ff00)
     .setFooter("EFT TC", avatarURL)
-    .setTimestamp(Date.now)
+    .setTimestamp(Date.now())
 }
 
 module.exports.makeError = makeError
