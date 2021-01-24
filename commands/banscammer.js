@@ -11,9 +11,9 @@ class BanScammerCommand extends Command {
     constructor() {
         super('banscammer', {
            aliases: ['banscammer'],
-           clientPermissions: ["BAN_MEMBERS", "SEND_MESSAGES"],
+           clientPermissions: ["BAN_MEMBERS", "SEND_MESSAGES", "MENTION_EVERYONE"],
            channel: "guild",
-           typing: true,
+           typing: false,
         });
     }
 
@@ -56,7 +56,6 @@ class BanScammerCommand extends Command {
                 let gameName = args[2].value
                 if (gameName != null && gameName.length > 0)
                 {
-                    console.log("ok gamename", gameName)
                     ret.gameName = gameName
                 }
 
@@ -100,6 +99,8 @@ class BanScammerCommand extends Command {
      * @memberof BanScammerCommand
      */
     async exec(message, args) {
+        if (!message.client.isStaffMember(message.member)) return
+
         if (args.target == null)
         {
             return await message.reply(`Couldn't find that member.\nUsage: \`!banscammer <Discord Member Name/Mention/ID> <In-Game Name> [Duration] [Ban Reason]\` `)
@@ -156,7 +157,8 @@ class BanScammerCommand extends Command {
         await message.guild.members.ban(id)
         await message.reply(embedHelper.makeSuccess(this.client, `Banned discord member \`${user.username}#${user.discriminator}\` with ID \`${id}\`\n In-Game Name: \`${args.gameName}\`\nReason: \`${args.reason}\`` , "Banned scammer " + user.username))
         console.log(`${message.author.id} issued a ban for scamming to discord member ${id}. GameName: ${args.gameName} Prune Duration: ${args.pruneDuration}`)
-        this.handler.emit("memberBanned", user, message.member, args.pruneDuration, args.reason)
+        await message.client.logBotAction(embedHelper.makeSuccess(this.client, `${message.author} has banned the discord member ${user} for scamming.\nBan Reason: \`${args.reason}\``, "Banned member " + user.username))
+        this.handler.emit("memberBanned", user, message.member, args.pruneDuration, args.reason, true)
         this.handler.emit("memberBannedScammer", user, message.member, args.gameName, args.pruneDuration, args.reason)
     }
 }

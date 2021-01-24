@@ -11,7 +11,7 @@ class BanCommand extends Command {
     constructor() {
         super('ban', {
            aliases: ['ban'],
-           clientPermissions: ["BAN_MEMBERS", "SEND_MESSAGES"],
+           clientPermissions: ["BAN_MEMBERS", "SEND_MESSAGES", "MENTION_EVERYONE"],
            /*args: [
                {
                    id: "target",
@@ -19,7 +19,7 @@ class BanCommand extends Command {
                }
            ],*/
            channel: "guild",
-           typing: true,
+           typing: false,
         });
     }
 
@@ -101,6 +101,8 @@ class BanCommand extends Command {
      * @memberof BanCommand
      */
     async exec(message, args) {
+        if (!message.client.isStaffMember(message.member)) return
+
         if (args.target == null)
         {
             return await message.reply(`Couldn't find that member.\nUsage: \`!ban <Discord Member Name/Mention/ID> [Duration] [Ban Reason]\` `)
@@ -150,8 +152,9 @@ class BanCommand extends Command {
         })
 
         await message.reply(embedHelper.makeSuccess(this.client, `Banned discord member \`${user.username}#${user.discriminator}\` with ID \`${id}\`\nReason: \`${args.reason}\`` , "Banned member " + user.username))
+        await message.client.logBotAction(embedHelper.makeSuccess(this.client, `${message.author} has banned the discord member ${user}.\nReason: \`${args.reason}\``), "Banned member " + user.username)
         console.log(`${message.author.id} issued a ban to discord member ${id}. Prune Duration: ${args.pruneDuration}`)
-        this.handler.emit("memberBanned", user, message.member, args.pruneDuration, args.reason)
+        this.handler.emit("memberBanned", user, message.member, args.pruneDuration, args.reason, false)
     }
 }
 
