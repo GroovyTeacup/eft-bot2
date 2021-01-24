@@ -37,7 +37,8 @@ class PurgeCommand extends Command {
         }
 
         // Add 1 to numToPurge to account for message that triggered this command
-        await message.channel.bulkDelete(numToPurge + 1)
+        // Automatically filter out messages that are too old to delete (Can only bulk delete messages under 14 days old)
+        await message.channel.bulkDelete(numToPurge + 1, true)
 
         console.log(`${message.author.id} purged ${numToPurge} messages from the ${message.channel.name} channel.`)
     }
