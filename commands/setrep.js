@@ -61,13 +61,14 @@ class RemoveReputationCommand extends Command {
             return await message.reply(embedHelper.makeError(this.client, `${target} is not a registered member. You cannot change their reputation.`))
         }
 
-        if (reputation >= 2147483647)
+        if (amount >= 2147483647)
         {
             return await message.reply(embedHelper.makeError(this.client, `Reputation number too high.`))
         }
 
         await dbHandler.setReputation(target.id, amount)
         await message.reply(embedHelper.makeSuccess(this.client, `${target} now has ${amount} reputation.`, "Set Reputation"))
+        message.client.commandHandler.emit("reputationChanged", message.member, target, reputation, amount)
         message.client.commandHandler.emit("reputationSet", message.member, target, amount)
         console.log(`(ADMIN) ${message.member.id} has set the reputation of ${target.id} to ${amount}`)
     }
