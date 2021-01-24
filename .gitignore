@@ -119,3 +119,8 @@ dist
 
 .vscode
 config.json
+configServer.json
+
+# pkg build files
+build
+bin/
