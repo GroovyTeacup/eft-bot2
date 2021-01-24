@@ -51,8 +51,7 @@ class ShowReputationCommand extends Command {
         let reputation = await dbHandler.getReputation(target.id)
         if (reputation == null)
         {
-            // TODO
-            return
+            return await message.reply(embedHelper.makeError(this.client, `${target} is not a registered member. They have no reputation.`))
         }
 
         await message.reply(embedHelper.makeSuccess(this.client, `${target} currently has ${reputation} reputation.`, "Total Reputation"))

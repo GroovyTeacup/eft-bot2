@@ -36,6 +36,8 @@ class RemoveReputationCommand extends Command {
      * @memberof RemoveReputationCommand
      */
     async exec(message, { target, amount }) {
+        if (!message.client.isStaffMember(message.member)) return
+        
         if (target == null || amount == null)
         {
             return await message.reply("Usage: `!setrep <Member> <Amount>`")
@@ -56,8 +58,12 @@ class RemoveReputationCommand extends Command {
         let reputation = await dbHandler.getReputation(target.id)
         if (reputation == null)
         {
-            // TODO
-            return
+            return await message.reply(embedHelper.makeError(this.client, `${target} is not a registered member. You cannot change their reputation.`))
+        }
+
+        if (reputation >= 2147483647)
+        {
+            return await message.reply(embedHelper.makeError(this.client, `Reputation number too high.`))
         }
 
         await dbHandler.setReputation(target.id, amount)
