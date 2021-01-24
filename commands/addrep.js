@@ -100,6 +100,7 @@ class AddReputationCommand extends Command {
 
         await dbHandler.setReputation(target.id, reputation + 1)
         await message.reply(embedHelper.makeSuccess(this.client, `${target} now has ${reputation + 1} reputation.`, "Added Reputation"))
+        message.client.commandHandler.emit("reputationChanged", message.member, target, reputation, reputation + 1)
         message.client.commandHandler.emit("reputationAdded", message.member, target, reputation + 1)
         console.log(`${message.member.id} has given 1 reputation to member ${target.id}`)
     }
