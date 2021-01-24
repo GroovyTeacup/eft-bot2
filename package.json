@@ -3,6 +3,10 @@
   "version": "2.0.0",
   "description": "Re-code of the original EFTClient for Pauleft's Escape From Tarkov trading server",
   "main": "index.js",
+  "bin": "index.js",
+  "pkg": {
+    "scripts": ["commands/*.js", "listeners/*.js"]
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ."
