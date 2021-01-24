@@ -1,4 +1,4 @@
-const { AkairoClient, CommandHandler, ListenerHandler } = require('discord-akairo');
+const { AkairoClient, CommandHandler, ListenerHandler, InhibitorHandler } = require('discord-akairo');
 const { Intents } = require('discord.js');
 const { Message } = require('discord.js');
 const DatabaseHandler = require("./databaseHandler")
@@ -50,6 +50,12 @@ class EFTClient extends AkairoClient {
             fetchMembers: true // Fetch message authors for commands instead of grabbing from cache
         })
 
+        this.inhibitorHandler = new InhibitorHandler(this, {
+            directory: path.join(__dirname, "inhibitors")
+        });
+
+        this.commandHandler.useInhibitorHandler(this.inhibitorHandler)
+
         this.listenerHandler = new ListenerHandler(this, {
             directory: path.join(__dirname, "listeners"),
         })
@@ -63,6 +69,9 @@ class EFTClient extends AkairoClient {
 
         console.log("Loading command files")
         this.commandHandler.loadAll() // Load all commands
+
+        console.log("Loading inhibitor files")
+        this.inhibitorHandler.loadAll()
 
         console.log("Loading listener files")
         this.listenerHandler.loadAll()
