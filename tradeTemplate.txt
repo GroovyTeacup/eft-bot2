@@ -1,0 +1,10 @@
+Please use the provided template
+```
+[WTB/WTS/WTT] 
+
+IGN:
+Items:
+Price:
+Notes: (Optional)
+```
+Offers not following these guidelines will be removed!
