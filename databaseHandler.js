@@ -306,6 +306,24 @@ class DatabaseHandler {
     }
 
     /**
+     *
+     *
+     * @memberof DatabaseHandler
+     */
+    async getReputationTop(num)
+    {
+        return await this.members.findAll({
+            limit: num,
+            order: [
+                ["reputation", "DESC"] // Sort descending by reputation
+            ],
+            where: {
+                is_active: true
+            }
+        })
+    }
+
+    /**
      * Set the reputation of a member
      *
      * @param {string} id
