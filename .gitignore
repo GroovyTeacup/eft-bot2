@@ -123,4 +123,5 @@ configServer.json
 
 # pkg build files
 build
+buildresult
 bin/
