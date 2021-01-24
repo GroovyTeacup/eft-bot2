@@ -40,5 +40,25 @@ function makeSuccess(client, message, title) {
     .setTimestamp(Date.now())
 }
 
+/**
+ *
+ *
+ * @param {EFTClient} client
+ * @param {string} message
+ * @param {string} title
+ * @returns
+ */
+function makeSimpleEmbed(client, message, title, color=0xff0000) {
+    const avatarURL = client.user.avatarURL()
+
+    return new MessageEmbed()
+    .setTitle(title)
+    .setDescription(message)
+    .setColor(color)
+    .setFooter("EFT TC", avatarURL)
+    .setTimestamp(Date.now())
+}
+
 module.exports.makeError = makeError
 module.exports.makeSuccess = makeSuccess
+module.exports.makeSimpleEmbed = makeSimpleEmbed
