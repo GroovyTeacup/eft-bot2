@@ -1,6 +1,6 @@
  
 const { Listener, Command } = require('discord-akairo');
-const EFTMessage = require('../eftMessage');
+const EFTMessage = require('../eftMessage.js');
 
 class CommandErrorListener extends Listener {
     constructor() {
@@ -19,7 +19,7 @@ class CommandErrorListener extends Listener {
      * @memberof CommandErrorListener
      */
     exec(error, message, command) {
-        console.error(`An error occurred while running command '${command.id}' for message '${message.id}' ran by member ${message.author.id}`, error)
+        console.error(`An error occurred while running command '${command.id}' for message '${message.id}' ran by member ${message.author.id}\n`, error)
     }
 }
 
