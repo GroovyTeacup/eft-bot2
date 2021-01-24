@@ -2,6 +2,7 @@ const { Sequelize, DataTypes } = require("sequelize")
 const EFTClient = require("./eftClient")
 const config = require("./config.json")
 const fs = require("fs")
+const { GuildMember } = require("discord.js")
 
 /**
  *
@@ -26,8 +27,8 @@ class DatabaseHandler {
             retry: {
                 max: 5
             },
-            //logging: false
-            logging: console.debug
+            logging: false
+            //logging: console.debug
         })
         this.db = db
 
@@ -37,7 +38,8 @@ class DatabaseHandler {
             ban_id: { 
                 type: DataTypes.INTEGER,
                 allowNull: false,
-                primaryKey: true
+                primaryKey: true,
+                autoIncrement: true
             },
             member_id: { // The ID of the member that was banned.
                 type: DataTypes.BIGINT,
@@ -198,6 +200,17 @@ class DatabaseHandler {
     }
 
     /**
+     * Check if a member exists in the database
+     *
+     * @param {string} id - The id of the discord member
+     * @returns
+     * @memberof DatabaseHandler
+     */
+    async memberExists(id) {
+        return await this.getMemberById(id) != null
+    }
+
+    /**
      * Get all members in the database
      *
      * @returns {Array<DBMember>}
@@ -209,6 +222,25 @@ class DatabaseHandler {
     }
 
     /**
+     * @param {GuildMember} member
+     * @returns
+     * @memberof DatabaseHandler
+     */
+    async addMember(member)
+    {
+        return await this.members.create({
+            member_id: member.id,
+            member_name: member.user.username + "#" + member.user.discriminator,
+            account_creation_date: member.user.createdAt,
+            accept_date: Date.now(),
+            is_active: true
+        }).catch((reason) => {
+            console.error(`Failed to add new member ${member.id} to the database. (${reason})`)
+        })
+    }
+
+
+    /**
      * Get all bans in the database
      *
      * @returns {Array<Ban>}
@@ -217,6 +249,26 @@ class DatabaseHandler {
     async getBans()
     {
         return await this.bans.findAll()
+    }
+
+    /**
+     * @param {string} memberId
+     * @param {string} issuerId
+     * @param {string} memberId
+     * @param {boolean} scammer
+     *
+     * @returns
+     * @memberof DatabaseHandler
+     */
+    async addBan(memberId, issuerId, reason, scammer)
+    {
+        return await this.bans.create({
+            member_id: memberId,
+            ban_issuer: issuerId,
+            ban_date: Date.now(),
+            ban_reason: reason,
+            is_scammer: scammer
+        })
     }
 
     /**
@@ -250,7 +302,7 @@ class DatabaseHandler {
             }
         }).catch((reason) => console.error(`Getting reputation of member ${id} failed:`, reason))
 
-        return member.reputation
+        return member && member.reputation
     }
 
     /**
