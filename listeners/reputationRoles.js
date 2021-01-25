@@ -21,7 +21,7 @@ class ReputationRolesListener extends Listener {
         let configServer = this.client.configServer
         let repRoles = configServer.ReputationRoles
 
-        console.log(`Reputation of member ${member.id} has changed from ${oldReputation} to ${newReputation}`)
+        //console.log(`Reputation of member ${member.id} has changed from ${oldReputation} to ${newReputation}`)
         
         for (const role of repRoles)
         {
