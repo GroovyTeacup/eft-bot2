@@ -116,9 +116,9 @@ class BanCommand extends Command {
         }
         else
         {
-            if (!args.target.bannable)
+            if (!args.target.bannable || message.member.roles.highest.position < args.target.roles.highest.position)
             {
-                return await embedHelper.makeError(this.client, "You are not allowed to ban this member.", "Ban failed")
+                return await message.reply(embedHelper.makeError(this.client, "You are not allowed to ban this member.", "Ban failed"))
             }
 
             id = args.target.id
@@ -126,7 +126,7 @@ class BanCommand extends Command {
 
         if (args.pruneDuration > 7)
         {
-            return await embedHelper.makeError(this.client, "Specify a pruning duration less or equal to 7 days. 0 days for no message pruning.", "Ban failed")
+            return await message.reply(embedHelper.makeError(this.client, "Specify a pruning duration less or equal to 7 days. 0 days for no message pruning.", "Ban failed"))
         }
 
         let user = await message.client.users.fetch(id, false, true).catch((reason) => {
@@ -144,6 +144,12 @@ class BanCommand extends Command {
         if (args.reason.length > 466)
         {
             args.reason = args.reason.substr(0, 466) + "..."
+        }
+
+        let ban = message.guild.fetchBan(user.id).catch(reason => {})
+        if (ban != null)
+        {
+            return await message.reply(embedHelper.makeError(this.client, "This user is already banned!", "Ban failed"))
         }
 
         await message.guild.members.ban(id, {
