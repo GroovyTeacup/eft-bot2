@@ -1,9 +1,9 @@
 const { Listener } = require('discord-akairo');
 const { GuildMember } = require("discord.js")
 
-class ReputationChangedListener extends Listener {
+class ReputationRolesListener extends Listener {
     constructor() {
-        super('reputationChanged', {
+        super('reputationRoles', {
             emitter: 'commandHandler',
             event: 'reputationChanged'
         });
@@ -15,7 +15,7 @@ class ReputationChangedListener extends Listener {
      * @param {GuildMember} member
      * @param {number} oldReputation
      * @param {number} newReputation
-     * @memberof ReadyListener
+     * @memberof ReputationRolesListener
      */
     async exec(member, oldReputation, newReputation) {
         let configServer = this.client.configServer
@@ -42,4 +42,4 @@ class ReputationChangedListener extends Listener {
     }
 }
 
-module.exports = ReputationChangedListener;
+module.exports = ReputationRolesListener;
