@@ -10,7 +10,15 @@ class RestrictChannels extends Inhibitor {
 
         this.commandWhitelist = [
             "mute",
-            "unmute"
+            "unmute",
+            "warn",
+            "addwarn",
+            "warns",
+            "warnings",
+            "showwarns",
+            "removewarn",
+            "rmwarn",
+            "removewarning"
         ]
     }
 
@@ -27,6 +35,7 @@ class RestrictChannels extends Inhibitor {
         let configServer = this.client.configServer
         let prefix = this.client.config.CommandPrefix
         let validChannels = []
+        
         validChannels.push(configServer.IdiotCheck)
         validChannels.push(configServer.CommandSpam)
         validChannels.push(configServer.CommandSpamStaff)
