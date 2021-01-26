@@ -73,11 +73,10 @@ class TradeTemplateListener extends Listener {
             }
 
             let msg = await message.reply(this.templateMessage)
-            await new Promise((resolve) => setTimeout(() => resolve(), 5000))
-            
+                        
             if (msg.deletable && !msg.deleted)
             {
-                await msg.delete()
+                await msg.delete({timeout: 5000})
             }
         }
     }
