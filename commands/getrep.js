@@ -30,7 +30,6 @@ class ShowReputationCommand extends Command {
      * @memberof ShowReputationCommand
      */
     async exec(message, { target }) {
-        console.log(target)
         if (target == null)
         {
             return await message.reply("Usage: `!showrep <Member>`")
