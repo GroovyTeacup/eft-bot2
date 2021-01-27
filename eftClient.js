@@ -7,6 +7,8 @@ const fs = require("fs");
 const { User } = require('discord.js');
 const embedHelper = require("./embedHelper");
 const { GuildMember } = require('discord.js');
+const MuteHandler = require('./muteHandler');
+const MiddlemanBoardHandler = require('./mmBoardHandler');
 
 const VERSION = "2.0.0"
 
@@ -25,19 +27,18 @@ class EFTClient extends AkairoClient {
             //disableMentions: "all",
             messageCacheLifetime: 86400, // every day
             messageSweepInterval: 3600, // every hour
-            partials: ["REACTION", "MESSAGE"],
             ws: {
-                intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "GUILD_MEMBERS", "GUILD_BANS", "GUILD_MESSAGE_TYPING"]
+                intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_BANS"]
             },
-            restRequestTimeout: 15000,
+            restRequestTimeout: 15000
             // Options for discord.js go here.
         });
 
         console.log(`Initializing EFTClient ${VERSION}`)
         
         this.botVersion = VERSION
-        this.config = JSON.parse(fs.readFileSync("config.json").toString())
-        this.configServer = JSON.parse(fs.readFileSync("configServer.json").toString())
+        this.config = JSON.parse(fs.readFileSync(path.join(process.cwd(), "config.json")).toString())
+        this.configServer = JSON.parse(fs.readFileSync(path.join(process.cwd(), "configServer.json")).toString())
 
         // Create Command Handler instance.
         this.commandHandler = new CommandHandler(this, {
@@ -47,7 +48,8 @@ class EFTClient extends AkairoClient {
             blockBots: true,
             allowMention: false,
             commandUtil: true,
-            fetchMembers: true // Fetch message authors for commands instead of grabbing from cache
+            fetchMembers: true, // Fetch message authors for commands instead of grabbing from cache
+            defaultCooldown: this.config.CommandDelay * 1000,
         })
 
         this.inhibitorHandler = new InhibitorHandler(this, {
@@ -67,6 +69,9 @@ class EFTClient extends AkairoClient {
 
         this.databaseHandler = new DatabaseHandler(this)
 
+        this.muteHandler = new MuteHandler(this)
+        this.mmBoardHandler = new MiddlemanBoardHandler(this)
+
         console.log("Loading command files")
         this.commandHandler.loadAll() // Load all commands
 
@@ -78,11 +83,16 @@ class EFTClient extends AkairoClient {
 
         console.log("Opening bot database")
         this.databaseHandler.loadData()
+
+        this.addListener("error", (error) => console.error(`Discord client error: ${error}`))
+        this.addListener("warn", (info) => console.error(`Discord client warning: ${info}`))
+        this.addListener("rateLimit", (info) => console.error(`Ratelimit triggered.\tTimeout: ${info.timeout}ms\tPath: ${info.path}\tMethod: ${info.method}\tRoute: ${info.route}`))
     }
 
     // Since this bot is only really meant to be run for a single guild we can do this
     getGuild()
     {
+        console.log("getguild", this.config.ServerID)
         return this.util.resolveGuild(this.config.ServerID, this.guilds.cache)
     }
 
@@ -142,7 +152,7 @@ class EFTClient extends AkairoClient {
      * @returns
      * @memberof EFTClient
      */
-    async isStaffMember(member)
+    isStaffMember(member)
     {
         if (member == null) return false
 
@@ -166,6 +176,22 @@ class EFTClient extends AkairoClient {
 
         // Administrators are always "staff". Otherwise, return false if StaffRoles is not defined yet or the user doesn't have a staff role.
         return false
+    }
+
+    /**
+     *
+     *
+     * @param {EFTClient} client
+     * @returns
+     * @memberof EFTClient
+     */
+    async updateStatus(client)
+    {
+        let guild = client.getGuild()
+        return await client.user.setActivity({
+            type: "LISTENING",
+            name: `${guild.memberCount} members`
+        })
     }
 }
 
