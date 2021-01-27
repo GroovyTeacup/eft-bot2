@@ -34,7 +34,7 @@ class SetMMReputationCommand extends Command {
      * @memberof SetMMReputationCommand
      */
     async exec(message, { target, amount }) {
-        if (!message.client.isStaffMember(message.member)) return
+        if (message.member.hasPermission("ADMINISTRATOR")) return
 
         let middleManRoleId = this.client.configServer.MiddlemanRole
         
