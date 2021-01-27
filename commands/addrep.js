@@ -4,6 +4,7 @@ const { Command } = require('discord-akairo');
 const { GuildMember } = require('discord.js');
 const EFTMessage = require('../eftMessage');
 const embedHelper = require("../embedHelper")
+const { DateTime } = require("luxon")
 
 class AddReputationCommand extends Command {
     constructor() {
@@ -40,10 +41,10 @@ class AddReputationCommand extends Command {
         let author = message.author
         
         // Stop the big brain attempts of people giving themselves reputation
-        /*if (message.member.id === target.id)
+        if (message.member.id === target.id)
         {
             return await message.reply(embedHelper.makeError(this.client, "Rolling a d20 for ban..."))
-        }*/
+        }
 
         // Meme
         if (target.user.id == this.client.user.id)
@@ -64,7 +65,7 @@ class AddReputationCommand extends Command {
             let time = reps[target.id]
             let delayMinutes = this.client.configServer.ReputationDelay || 15
 
-            if ((Date.now - time) < (60 * delayMinutes))
+            if (DateTime.local() < time.plus({minutes: delayMinutes}))
             {
                 return await message.reply(embedHelper.makeError(this.client, `You cannot give reputaton to ${target} again so soon.`))
             }
@@ -96,11 +97,11 @@ class AddReputationCommand extends Command {
             return await message.reply(embedHelper.makeError(this.client, `Reputation number too high.`))
         }
 
-        this.repAddCache[author.id][target.id] = Date.now
+        this.repAddCache[author.id][target.id] = DateTime.local()
 
         await dbHandler.setReputation(target.id, reputation + 1)
         await message.reply(embedHelper.makeSuccess(this.client, `${target} now has ${reputation + 1} reputation.`, "Added Reputation"))
-        message.client.commandHandler.emit("reputationChanged", message.member, target, reputation, reputation + 1)
+        message.client.commandHandler.emit("reputationChanged", target, reputation, reputation + 1)
         console.log(`${message.member.id} has given 1 reputation to member ${target.id}`)
     }
 }
