@@ -2,6 +2,7 @@ const { Sequelize, DataTypes } = require("sequelize")
 const EFTClient = require("./eftClient")
 const config = require("./config.json")
 const fs = require("fs")
+const path = require("path")
 const { GuildMember } = require("discord.js")
 
 /**
@@ -113,23 +114,59 @@ class DatabaseHandler {
         })
 
         const Warn = db.define("warn", {
+            id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                primaryKey: true,
+                autoIncrement: true
+            },
             member_id: {
                 type: DataTypes.BIGINT,
                 allowNull: false,
-                primaryKey: true
             },
             issuer_id: {
                 type: DataTypes.BIGINT,
                 allowNull: false,
             },
-            warn_reason: {
+            reason: {
                 type: DataTypes.STRING,
                 allowNull: false
             },
+            active: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: true
+            },
+            issued_date: {
+                type: DataTypes.DATE,
+                allowNull: false
+            }
+        })
+
+        const Mute = db.define("mute", {
+            member_id: {
+                type: DataTypes.BIGINT,
+                primaryKey: true,
+                allowNull: false
+            },
+            end_date: {
+                type: DataTypes.DATE,
+                allowNull: false
+            },
+            issuer_id: {
+                type: DataTypes.BIGINT,
+                allowNull: false,
+            },
+            issued_date: {
+                type: DataTypes.DATE,
+                allowNull: false
+            }
         })
 
         this.bans = Ban
         this.members = Member
+        this.warns = Warn
+        this.mutes = Mute
         this.db = db
         
     }
@@ -150,14 +187,14 @@ class DatabaseHandler {
 
         console.log("Syncing models with database")
 
-        if (fs.existsSync("fdbalter"))
+        if (fs.existsSync(path.join(process.cwd(), "fdbalter")))
         {
             console.log("fdbalter file found; Syncing database models with ALTER")
             this.db.sync({
                 alter: true,
                 logging: console.debug
             })
-            fs.rmSync("fdbalter")
+            fs.rmSync(path.join(process.cwd(), "fdbalter"))
         }
         else
         {
@@ -211,6 +248,56 @@ class DatabaseHandler {
     }
 
     /**
+     * Get all warns for a member
+     *
+     * @param {string} id - The id of the discord member
+     * @param {boolean} all - Whether to get all the user's warns, not just active ones
+     * @returns
+     * @memberof DatabaseHandler
+     */
+    async getWarns(id, all) {
+        return await this.warns.findAll({
+            where: {
+                member_id: id,
+                active: !all
+            },
+            order: [["issued_date", "ASC"]]
+        })
+    }
+
+    /**
+     * Remove all warns for a member
+     *
+     * @param {string} id - The id of the discord member
+     * @returns
+     * @memberof DatabaseHandler
+     */
+    async clearWarns(id) {
+        return await this.warns.update({
+            active: false
+        },{
+            where: {
+                member_id: id,
+                active: true
+            }
+        })
+    }
+
+    /**
+     *
+     * @param {string} id - The id of the discord member
+     * @returns
+     * @memberof DatabaseHandler
+     */
+    async getMute(id) {
+        return await this.mutes.findOne({
+            where: {
+                member_id: id
+            }
+        })
+    }
+
+    /**
      * Get all members in the database
      *
      * @returns {Array<DBMember>}
@@ -219,6 +306,17 @@ class DatabaseHandler {
     async getMembers()
     {
         return await this.members.findAll()
+    }
+
+    /**
+     * Get all mutes in the database
+     *
+     * @returns {Array<DBMember>}
+     * @memberof DatabaseHandler
+     */
+    async getMutes()
+    {
+        return await this.mutes.findAll()
     }
 
     /**
@@ -268,6 +366,73 @@ class DatabaseHandler {
             ban_date: Date.now(),
             ban_reason: reason,
             is_scammer: scammer
+        })
+    }
+
+    /**
+     * @param {string} memberId
+     * @param {string} issuerId
+     * @param {string} endDate
+     * @param {boolean} scammer
+     *
+     * @returns
+     * @memberof DatabaseHandler
+     */
+    async addMute(memberId, issuerId, endDate)
+    {
+        return await this.mutes.create({
+            member_id: memberId,
+            issuer_id: issuerId,
+            issued_date: Date.now(),
+            end_date: endDate
+        })
+    }
+
+    /**
+     * @param {number} warnId
+     * @returns
+     * @memberof DatabaseHandler
+     */
+    async removeWarn(warnId)
+    {
+        return await this.warns.update({
+            active: false // Don't actually remove the warning from the database, just make it inactive
+        }, {
+            where: {
+                id: warnId
+            }
+        })
+    }
+
+    /**
+     * @param {number} memberId
+     * @returns
+     * @memberof DatabaseHandler
+     */
+    async removeMute(memberId)
+    {
+        return await this.mutes.destroy({
+            where: {
+                member_id: memberId
+            }
+        })
+    }
+
+    /**
+     * @param {string} memberId
+     * @param {string} issuerId
+     * @param {string} reason
+     *
+     * @returns
+     * @memberof DatabaseHandler
+     */
+    async addWarn(memberId, issuerId, reason)
+    {
+        return await this.warns.create({
+            member_id: memberId,
+            issuer_id: issuerId,
+            reason: reason,
+            issued_date: Date.now(),
         })
     }
 
@@ -324,6 +489,24 @@ class DatabaseHandler {
     }
 
     /**
+     *
+     *
+     * @memberof DatabaseHandler
+     */
+    async getMMReputationTop(num)
+    {
+        return await this.members.findAll({
+            limit: num,
+            order: [
+                ["mm_reputation", "DESC"] // Sort descending by middleman reputation
+            ],
+            where: {
+                is_active: true
+            }
+        })
+    }
+
+    /**
      * Set the reputation of a member
      *
      * @param {string} id
@@ -333,7 +516,8 @@ class DatabaseHandler {
     async setReputation(id, num)
     {
         return await this.members.update({
-            reputation: num
+            reputation: num,
+            active: true // Member has to be in the server to receive reputation, so we'll just always set this to true.
         }, {
             where: {
                 member_id: id
@@ -369,7 +553,8 @@ class DatabaseHandler {
     async setMMReputation(id, num)
     {
         return await this.members.update({
-            mm_reputation: num
+            mm_reputation: num,
+            active: true // Member has to be in the server to receive reputation, so we'll just always set this to true.
         }, {
             where: {
                 member_id: id
