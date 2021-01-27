@@ -146,7 +146,7 @@ class BanCommand extends Command {
             args.reason = args.reason.substr(0, 466) + "..."
         }
 
-        let ban = message.guild.fetchBan(user.id).catch(reason => {})
+        let ban = await message.guild.fetchBan(user.id).catch(reason => {})
         if (ban != null)
         {
             return await message.reply(embedHelper.makeError(this.client, "This user is already banned!", "Ban failed"))
@@ -158,7 +158,7 @@ class BanCommand extends Command {
         })
 
         await message.reply(embedHelper.makeSuccess(this.client, `Banned discord member \`${user.username}#${user.discriminator}\` with ID \`${id}\`\nReason: \`${args.reason}\`` , "Banned member " + user.username))
-        await message.client.logBotAction(embedHelper.makeSuccess(this.client, `${message.author} has banned the discord member ${user}.\nReason: \`${args.reason}\``), "Banned member " + user.username)
+        await message.client.logBotAction(embedHelper.makeSuccess(this.client, `${message.author} has banned the discord member ${user}.\nReason: \`${args.reason}\``, "Banned member " + user.username))
         console.log(`${message.author.id} issued a ban to discord member ${id}. Prune Duration: ${args.pruneDuration}`)
         this.handler.emit("memberBanned", user, message.member, args.pruneDuration, args.reason, false)
     }
