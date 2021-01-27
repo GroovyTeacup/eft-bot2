@@ -68,7 +68,7 @@ class RemoveReputationCommand extends Command {
 
         await dbHandler.setReputation(target.id, amount)
         await message.reply(embedHelper.makeSuccess(this.client, `${target} now has ${amount} reputation.`, "Set Reputation"))
-        message.client.commandHandler.emit("reputationChanged", message.member, reputation, amount)
+        message.client.commandHandler.emit("reputationChanged", target, reputation, amount)
         console.log(`(ADMIN) ${message.member.id} has set the reputation of ${target.id} to ${amount}`)
     }
 }
