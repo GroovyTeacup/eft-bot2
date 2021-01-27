@@ -26,7 +26,7 @@ class RegisterMeCommand extends Command {
         
         let dbHandler = message.client.databaseHandler
 
-        if (dbHandler.memberExists(member.id))
+        if (await dbHandler.memberExists(member.id))
         {
             return await message.reply(embedHelper.makeError(this.client, "You're already registered as a member!"))
         }
