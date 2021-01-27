@@ -8,7 +8,7 @@ const embedHelper = require("../embedHelper")
 class RemoveMMReputationCommand extends Command {
     constructor() {
         super('rmmmrep', {
-           aliases: ['rmmmrep', "removemmrep", "mmrepremove", "takemmrep"],
+           aliases: ['rmmmrep', "mmremoverep", "removemmrep", "mmrepremove", "takemmrep"],
            args: [
                {
                    id: "target",

@@ -10,7 +10,7 @@ const { DateTime } = require("luxon")
 class AddMMReputationCommand extends Command {
     constructor() {
         super('addmmrep', {
-           aliases: ['addmmrep', "mmrepadd", "givemmrep"],
+           aliases: ['addmmrep', "mmaddrep", "mmrepadd", "givemmrep"],
            args: [
                {
                    id: "target",

@@ -8,7 +8,7 @@ const embedHelper = require("../embedHelper")
 class SetMMReputationCommand extends Command {
     constructor() {
         super('setmmrep', {
-           aliases: ['setmmrep'],
+           aliases: ['setmmrep', "mmsetrep"],
            args: [
                {
                    id: "target",
