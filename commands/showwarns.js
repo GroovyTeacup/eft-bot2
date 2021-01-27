@@ -33,6 +33,8 @@ class ShowWarningsCommand extends Command {
      * @memberof ShowWarningsCommand
      */
     async exec(message, { target }) {
+        if (!message.client.isStaffMember(message.member)) return
+        
         let dbHandler = message.client.databaseHandler
         let issuer = message.member
 
