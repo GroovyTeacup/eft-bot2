@@ -31,6 +31,8 @@ class CheckBanCommand extends Command {
      * @memberof CheckBanCommand
      */
     async exec(message, { userId }) {
+        if (!message.client.isStaffMember(issuer)) return
+        
         let server = message.client.getGuild()
         let user = await message.client.users.fetch(userId, false, true).catch((reason) => {
             console.error(`${message.author.id} tried to check ban info for a user with id ${userId} but failed to fetch user.`)
