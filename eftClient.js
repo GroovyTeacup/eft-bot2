@@ -92,7 +92,6 @@ class EFTClient extends AkairoClient {
     // Since this bot is only really meant to be run for a single guild we can do this
     getGuild()
     {
-        console.log("getguild", this.config.ServerID)
         return this.util.resolveGuild(this.config.ServerID, this.guilds.cache)
     }
 
