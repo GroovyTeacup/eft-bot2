@@ -19,22 +19,21 @@ class IdiotCheckDeleteListener extends Listener {
      */
     async exec(message) {
         let configServer = this.client.configServer
+        let muted = await message.client.muteHandler.isMemberMuted(message.member.id)
 
-        if (message.channel.id == configServer.IdiotCheck)
+        // Don't try to delete messages from muted members; They'll already be deleted anyway.
+        if (message.channel.id == configServer.IdiotCheck && !muted)
         {
             let member = message.member
 
             // Don't delete messages made by administrators
             if (member.hasPermission("ADMINISTRATOR")) return
             
-            if (message.deletable)
+            if (message.deletable && !message.deleted)
             {
-                await message.delete()
+                await message.delete().catch((err) => console.log(`Failed to delete idiot-check message for member ${message.user.id}. (${err})`))
             }
-
-            return
         }
- 
         
     }
 }

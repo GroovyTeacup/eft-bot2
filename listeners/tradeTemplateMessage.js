@@ -45,6 +45,7 @@ class TradeTemplateListener extends Listener {
             let okFlags = 0
             let lines = content.split(/\r?\n/)
 
+            // Who needs regex when you can use bitflags and substrings!? (Except there's regex right above this comment)
             for (const line of lines)
             {
                 if ((okFlags & OK.IGN) != OK.IGN && line.startsWith("ign"))

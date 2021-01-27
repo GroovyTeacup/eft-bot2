@@ -9,11 +9,8 @@ class CommandBlockedListener extends Listener {
         });
     }
 
-    exec(message, command, remaining) {
-        if (command.id === "addrep" )
-        {
-            return message.reply("You cannot add rep again that fast!")
-        }
+    async exec(message, command, remaining) {
+        return await message.reply(`Do not spam commands! Try again in ${Math.round(remaining / 1000)} seconds.`)
     }
 }
 
