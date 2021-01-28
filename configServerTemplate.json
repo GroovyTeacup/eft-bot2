@@ -1,0 +1,28 @@
+{
+    "IdiotCheck": "0",
+    "BotLogs": "0",
+    "CommandSpam": "0",
+    "CommandSpamStaff": "0",
+    "ScammerNotify": "0",
+    "KnownScammers": "0",
+    "ScammerUpdatesRole": "0",
+    "BearRole": "0",
+    "USECRole": "0",
+    "MemberRole": "0",
+    "ReputationRoles": {
+        {"num": 10, "id": "0"}
+    },
+    "StaffRoles": [
+        "0",
+        "0",
+        "0"
+    ],
+    "TradeChannels": [
+        "0",
+        "0",
+        "0"
+    ],
+    "MiddlemanRole": "0",
+    "MiddlemanBoardChannel": "0",
+    "MutedRole": "0"
+}

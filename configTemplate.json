@@ -1,0 +1,17 @@
+{
+    "SecretToken": "",
+    "ServerID": "0",
+    "Debug": false,
+    "CommandPrefix": "!",
+    "ReputationDelay": 15,
+    "CommandDelay": 5,
+    "WarnThreshold": 3,
+    "BlacklistedTradeWords": [
+      "Paypal"
+    ],
+    "DatabaseHost": "127.0.0.1",
+    "DatabasePort": 3306,
+    "DatabaseName": "database",
+    "DatabaseUsername": "user",
+    "DatabasePassword": "password"
+  }
