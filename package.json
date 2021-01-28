@@ -6,12 +6,13 @@
   "bin": "index.js",
   "pkg": {
     "scripts": [
-      "commands/*.js",
-      "listeners/*.js",
-      "inhibitors/*.js"
+      "commands/**/*.js",
+      "listeners/**/*.js",
+      "inhibitors/**/*.js"
     ],
     "assets": [
-      "tradeTemplate.txt"
+      "tradeTemplate.txt",
+      "node_modules/discord.js/**/*"
     ]
   },
   "scripts": {
