@@ -30,7 +30,7 @@ class RemoveMMReputationCommand extends Command {
      * @memberof RemoveMMReputationCommand
      */
     async exec(message, { target }) {
-        if (message.member.hasPermission("ADMINISTRATOR")) return
+        if (!message.member.hasPermission("ADMINISTRATOR")) return
 
         let middleManRoleId = this.client.configServer.MiddlemanRole
         
