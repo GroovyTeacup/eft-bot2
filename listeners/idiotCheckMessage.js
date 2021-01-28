@@ -19,6 +19,8 @@ class IdiotCheckDeleteListener extends Listener {
      */
     async exec(message) {
         let configServer = this.client.configServer
+        // This happens apparently. I think because of DMs? TODO: test
+        if (message.member == null) return
         let muted = await message.client.muteHandler.isMemberMuted(message.member.id)
 
         // Don't try to delete messages from muted members; They'll already be deleted anyway.

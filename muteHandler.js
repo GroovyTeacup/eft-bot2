@@ -50,6 +50,8 @@ class MuteHandler {
 
         client.addListener("message", async (message) => {
             let member = message.member
+            // This happens apparently. I think because of DMs? TODO: test
+            if (member == null) return
             let isMuted = this.isMemberMuted(member.id)
 
             if (isMuted && message.deletable && !message.deleted)
