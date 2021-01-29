@@ -1,5 +1,6 @@
 {
     "SecretToken": "",
+    "MarketAPIKey": "",
     "ServerID": "0",
     "Debug": false,
     "CommandPrefix": "!",
