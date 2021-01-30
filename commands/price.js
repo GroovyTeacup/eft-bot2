@@ -112,24 +112,35 @@ class PriceCommand extends Command {
             return await message.reply(embedHelper.makeError(this.client, `No items found with the search term "${search}".`, "No items found"))
        }
 
+       let item
+
        if (result.length > 1)
        {
            let embed = embedHelper.makeError(this.client, "", `Multiple items found (${result.length}):`)
            let str = ""
 
-           for (const item of result)
+           for (const json of result)
            {
-                str += "> " + item.name + "\n"
+               if (search.trim().toLowerCase() == json.name.trim().toLowerCase())
+               {
+                   item = json
+               }
+               str += "> " + json.name + "\n"
            }
 
-           str += "\nSpecify your search request"
+           if (item == null)
+           {
+            str += "\nSpecify your search request"
 
            embed.setDescription(str)
 
            return await message.reply(embed)
+           }
        }
-
-       let item = result[0]
+       else
+       {
+            item = result[0]
+       }
        
        let embed = embedHelper.makeSimpleEmbed(this.client, "", "")
 
