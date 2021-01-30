@@ -34,7 +34,6 @@ class PriceCommand extends Command {
     parseUpdateTime(timeStr) {
         let str = ""
         let time = DateTime.fromISO(timeStr)
-        console.log(time)
         let duration = Duration.fromMillis(Date.now() - time.toJSDate()).shiftTo('weeks', 'days', 'hours', 'minutes', 'seconds')
 
         if (duration.weeks > 0) str += `${duration.weeks}w `
