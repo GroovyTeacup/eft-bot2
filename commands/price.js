@@ -141,10 +141,10 @@ class PriceCommand extends Command {
 
         let fakeFooter = `[Wiki](${item.wikiLink})`
 
-        embed.addField("Price", `**${item.price}${item.traderPriceCur}**\n(*lowest price*)`, true)
-        embed.addField("Price Per Slot", `**${item.price / item.slots}${item.traderPriceCur}**\n(*${item.slots} slots*)`, true)
+        embed.addField("Price", `**${item.price.toLocaleString()}${item.traderPriceCur}**\n(*lowest price*)`, true)
+        embed.addField("Price Per Slot", `**${(item.price / item.slots).toLocaleString()}${item.traderPriceCur}**\n(*${item.slots} slots*)`, true)
         embed.addField("Price Difference", `1 day: **${item.diff24h}%**\n7 days: **${item.diff7days}%**`, true)
-        embed.addField(item.traderName, `**${item.traderPrice}${item.traderPriceCur}**\n(*Highest buy back price by trader*)\n\n${fakeFooter}`, true)
+        embed.addField(item.traderName, `**${item.traderPrice.toLocaleString()}${item.traderPriceCur}**\n(*Highest buy back price by trader*)\n\n${fakeFooter}`, true)
 
         embed.setAuthor(item.name, "https://tarkov-market.com/_nuxt/icons/icon_512x512.e2f01c.png", item.link)
         embed.setThumbnail(item.img)
