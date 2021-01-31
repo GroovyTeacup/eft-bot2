@@ -18,7 +18,8 @@ class PurgeCommand extends Command {
 
                }
            ],
-           clientPermissions: ["ADMINISTRATOR"],
+           clientPermissions: ["MANAGE_MESSAGES"],
+           userPermissions: ["ADMINISTRATOR"],
            channel: "guild"
         });
     }
