@@ -70,14 +70,18 @@ class TradeTemplateListener extends Listener {
 
             if (message.deletable && !message.deleted)
             {
-                await message.delete()
+                await message.delete().catch((err) => {
+                    console.error(`Failed to delete invalid trade message ${message.id} by member ${message.member.id} in channel ${message.channel.id}. (${err})`)
+                })
             }
 
             let msg = await message.reply(this.templateMessage)
                         
             if (msg.deletable && !msg.deleted)
             {
-                await msg.delete({timeout: 5000})
+                await msg.delete({timeout: 5000}).catch((err) => {
+                    console.warn("Couldn't find trade template warning message warning message to delete: ", err)
+                })
             }
         }
     }
