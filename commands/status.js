@@ -53,8 +53,9 @@ class StatusCommand extends Command {
         let banCount = await dbHandler.bans.count()
         let membersCount = members.length
 
+        
         let totalRep = 0
-        members.forEach(x => totalRep += x.reputation)
+        members.forEach(x => totalRep += Math.max(0, x.reputation))
 
         embed.addField("Server ID", server.id, true)
         embed.addField("Bot User ID", client.user.id, true)
