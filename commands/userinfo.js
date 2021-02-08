@@ -33,6 +33,8 @@ class UserInfoCommand extends Command {
      * @memberof UserInfoCommand
      */
     async exec(message, { target }) {
+        if (target == null) return await message.reply(embedHelper.makeError(this.client, "Invalid target."))
+        
         let server = message.client.getGuild()
         let dbHandler = message.client.databaseHandler
 
