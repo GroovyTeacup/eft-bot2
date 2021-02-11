@@ -36,6 +36,34 @@ declare class DBMember {
     /** Whether the member is active */
     is_active: boolean
 }
+
+/** An instance of a warning within the database */
+declare class Warn {
+    /** The id of the warning */
+    id: int
+    /** The id of the member that was warned */
+    member_id: int
+    /** The id of the member that issued the warn */
+    issuer_id: int
+    /** The reason for the warn */
+    reason: string
+    /** Whether the warn is currently active */
+    active: string
+    /** The date/time the warn was issued. */
+    issued_date: Date
+}
+
+/** An instance of a mute within the database */
+declare class Mute {
+    /** The id of the member that is muted */
+    member_id: int
+    /** The id of the member that issued the mute */
+    issuer_id: int
+    /** The date/time the mute was issued. */
+    issued_date: Date
+    /** The date/time the mute will end. */
+    end_date: Date
+}
 /*
 declare class EFTMessage extends Message {
     client: EFTClient

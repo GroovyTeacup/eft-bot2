@@ -9,6 +9,7 @@ const embedHelper = require("./embedHelper");
 const { GuildMember } = require('discord.js');
 const MuteHandler = require('./muteHandler');
 const MiddlemanBoardHandler = require('./mmBoardHandler');
+const WarnHandler = require('./warnHandler');
 
 const VERSION = "2.1.0"
 
@@ -71,6 +72,7 @@ class EFTClient extends AkairoClient {
 
         this.muteHandler = new MuteHandler(this)
         this.mmBoardHandler = new MiddlemanBoardHandler(this)
+        this.warnHandler = new WarnHandler(this)
 
         console.log("Loading command files")
         this.commandHandler.loadAll() // Load all commands

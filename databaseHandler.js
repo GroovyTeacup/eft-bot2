@@ -1,3 +1,5 @@
+/// <reference path="typings/eft.d.ts">/>
+
 const { Sequelize, DataTypes } = require("sequelize")
 const EFTClient = require("./eftClient")
 const config = require("./config.json")
@@ -286,7 +288,7 @@ class DatabaseHandler {
     /**
      *
      * @param {string} id - The id of the discord member
-     * @returns
+     * @returns {Mute}
      * @memberof DatabaseHandler
      */
     async getMute(id) {
@@ -311,12 +313,23 @@ class DatabaseHandler {
     /**
      * Get all mutes in the database
      *
-     * @returns {Array<DBMember>}
+     * @returns {Array<Mute>}
      * @memberof DatabaseHandler
      */
     async getMutes()
     {
         return await this.mutes.findAll()
+    }
+
+    /**
+     * Get all warns in the database
+     *
+     * @returns {Promise<Array<Warn>>}
+     * @memberof DatabaseHandler
+     */
+    async getAllWarns()
+    {
+        return await this.warns.findAll()
     }
 
     /**
