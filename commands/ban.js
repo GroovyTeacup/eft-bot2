@@ -6,6 +6,7 @@ const { User } = require('discord.js');
 const { GuildMember } = require('discord.js');
 const EFTMessage = require('../eftMessage');
 const embedHelper = require("../embedHelper")
+const { DateTime } = require("luxon")
 
 class BanCommand extends Command {
     constructor() {
@@ -21,6 +22,8 @@ class BanCommand extends Command {
            channel: "guild",
            typing: false,
         });
+
+        this.banTracker = []
     }
 
     /**
@@ -151,6 +154,34 @@ class BanCommand extends Command {
         {
             return await message.reply(embedHelper.makeError(this.client, "This user is already banned!", "Ban failed"))
         }
+
+        this.banTracker.push({
+            victim: user,
+            issuer: message.member,
+            banTime: DateTime.local()
+        })
+
+        if (!message.member.hasPermission("ADMINISTRATOR"))
+        {
+            let count = 0
+            for (const tban of this.banTracker)
+            {
+                /** @type {DateTime} */
+                let time = tban.banTime
+                if (tban.issuer.id == message.author.id && DateTime.local() < time.plus({minutes: 10}))
+                {
+                    count++
+                }
+            }
+
+            if (count >= 8)
+            {
+                return await message.member.ban({
+                    reason: "Automatically banned for using the ban command 8 times in 10 minutes"
+                })
+            }
+        }
+        
 
         await message.guild.members.ban(id, {
             days: args.pruneDuration,
