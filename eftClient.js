@@ -11,7 +11,7 @@ const MuteHandler = require('./muteHandler');
 const MiddlemanBoardHandler = require('./mmBoardHandler');
 const WarnHandler = require('./warnHandler');
 
-const VERSION = "2.1.0.1"
+const VERSION = "2.1.1"
 
 /**
  *
