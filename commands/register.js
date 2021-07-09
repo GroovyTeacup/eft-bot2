@@ -44,12 +44,12 @@ class RegisterCommand extends Command {
             return await message.reply(embedHelper.makeError(this.client, `${target} is already registered as a member!`))
         }
 
-        await member.roles.add(memberRoleId).catch((reason) => console.error(`Failed to add member role to member ${member.id} (${reason})`))
+        await target.roles.add(memberRoleId).catch((reason) => console.error(`Failed to add member role to member ${target.id} (${reason})`))
 
-        await dbHandler.addMember(member)
+        await dbHandler.addMember(target)
 
-        await message.reply(embedHelper.makeSuccess(this.client, `Registered ${member} as a member`))
-        console.log(`Registered ${member.id} as a new member. (!register)`)
+        await message.reply(embedHelper.makeSuccess(this.client, `Registered ${target} as a member`))
+        console.log(`Registered ${target.id} as a new member. (!register)`)
     }
 }
 
