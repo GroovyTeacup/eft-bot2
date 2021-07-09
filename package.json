@@ -1,6 +1,6 @@
 {
   "name": "eft-bot",
-  "version": "2.1.0",
+  "version": "2.1.0.1",
   "description": "Re-code of the original EFTClient for Pauleft's Escape From Tarkov trading server",
   "main": "index.js",
   "bin": "index.js",
